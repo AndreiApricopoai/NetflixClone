@@ -440,8 +440,9 @@ class _HomeState extends State<HomeScreen> with RouteAware {
                           child: Row(
                             children: [
                               Image.asset(
-                                "assets/icons/logo.ico",
+                                "assets/icons/netflix.png",
                                 width: 35,
+                                height: 35,
                                 fit: BoxFit.cover,
                               )
                             ],
