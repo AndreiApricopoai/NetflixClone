@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_netflix_clone_app/data.dart';
 import 'package:flutter_netflix_clone_app/screens/details_screen.dart';
+import 'package:flutter_netflix_clone_app/screens/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,6 +9,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeState extends State<HomeScreen> {
+  String _selectedCategory = 'Categories';
+
+  void _onCategorySelected(String category) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SearchScreen(category: category),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -181,7 +193,8 @@ class _HomeState extends State<HomeScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => DetailScreen(),
+                                        builder: (_) => DetailScreen(
+                                            id: Data.mylist[index]['id']),
                                       ),
                                     );
                                   },
@@ -232,7 +245,8 @@ class _HomeState extends State<HomeScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => DetailScreen(),
+                                        builder: (_) => DetailScreen(
+                                            id: Data.popularList[index]['id']),
                                       ),
                                     );
                                   },
@@ -285,8 +299,8 @@ class _HomeState extends State<HomeScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) =>
-                                          DetailScreen(), // Ensure this screen exists
+                                      builder: (_) => DetailScreen(
+                                          id: Data.top10Romania[index]['id']),
                                     ),
                                   );
                                 },
@@ -366,7 +380,8 @@ class _HomeState extends State<HomeScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => DetailScreen(),
+                                        builder: (_) => DetailScreen(
+                                            id: Data.originalList[index]['id']),
                                       ),
                                     );
                                   },
@@ -440,41 +455,75 @@ class _HomeState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(
-                          "TV Shows",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withOpacity(0.8),
-                          ),
-                        ),
-                        Text(
-                          "Movies",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withOpacity(0.8),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "Categories",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white.withOpacity(0.8),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => SearchScreen(isMovie: false),
                               ),
-                            ),
-                            SizedBox(
-                              width: 3,
-                            ),
-                            Icon(
-                              Icons.keyboard_arrow_down,
+                            );
+                          },
+                          child: Text(
+                            "TV Shows",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
                               color: Colors.white.withOpacity(0.8),
-                            )
-                          ],
-                        )
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => SearchScreen(isMovie: true),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Movies",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                          ),
+                        ),
+                        DropdownButton<String>(
+                          dropdownColor: Colors.black,
+                          value: _selectedCategory,
+                          style: TextStyle(color: Colors.white),
+                          icon: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                          underline: Container(),
+                          items: <String>[
+                            'Categories',
+                            'Action',
+                            'Drama',
+                            'Kids'
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            if (newValue != null && newValue != 'Categories') {
+                              _onCategorySelected(newValue);
+                            }
+                          },
+                        ),
                       ],
                     )
                   ],

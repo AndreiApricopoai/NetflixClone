@@ -3,6 +3,11 @@ import 'package:flutter_netflix_clone_app/data.dart';
 import 'package:flutter_netflix_clone_app/screens/details_screen.dart';
 
 class SearchScreen extends StatefulWidget {
+  final bool? isMovie;
+  final String? category;
+
+  SearchScreen({this.isMovie, this.category});
+
   @override
   _SearchState createState() => _SearchState();
 }
@@ -15,6 +20,7 @@ class _SearchState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    _filterResults();
   }
 
   @override
@@ -29,11 +35,17 @@ class _SearchState extends State<SearchScreen> {
   }
 
   _filterResults() {
-    List filtered = Data.allResults
-        .where((item) => item['title']
-            .toLowerCase()
-            .contains(_searchController.text.toLowerCase()))
-        .toList();
+    List filtered = Data.allResults.where((item) {
+      bool matchesTitle = item['title']
+          .toLowerCase()
+          .contains(_searchController.text.toLowerCase());
+      bool matchesType =
+          widget.isMovie == null ? true : item['ismovie'] == widget.isMovie;
+      bool matchesCategory = widget.category == null
+          ? true
+          : item['category'].toLowerCase() == widget.category!.toLowerCase();
+      return matchesTitle && matchesType && matchesCategory;
+    }).toList();
 
     setState(() {
       _filteredResults = filtered;
@@ -57,6 +69,7 @@ class _SearchState extends State<SearchScreen> {
     return AppBar(
       backgroundColor: Colors.black,
       elevation: 0,
+      iconTheme: IconThemeData(color: Colors.white.withOpacity(0.8)),
       title: Container(
         width: size.width,
         height: 35,
@@ -88,7 +101,13 @@ class _SearchState extends State<SearchScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "All Results",
+              widget.category == null
+                  ? (widget.isMovie == null
+                      ? "All Results"
+                      : widget.isMovie!
+                          ? "Movies"
+                          : "TV Shows")
+                  : widget.category!.capitalize(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -105,7 +124,8 @@ class _SearchState extends State<SearchScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => DetailScreen(),
+                        builder: (_) =>
+                            DetailScreen(id: _filteredResults[index]['id']),
                       ));
                 },
                 child: Padding(
@@ -182,5 +202,11 @@ class _SearchState extends State<SearchScreen> {
         ),
       ),
     );
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
