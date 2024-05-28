@@ -3,13 +3,36 @@ import 'package:flutter_netflix_clone_app/data.dart';
 import 'package:flutter_netflix_clone_app/screens/details_screen.dart';
 import 'package:flutter_netflix_clone_app/screens/search_screen.dart';
 
+class CustomRouteObserver extends RouteObserver<PageRoute<dynamic>> {}
+final customRouteObserver = CustomRouteObserver();
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<HomeScreen> {
+class _HomeState extends State<HomeScreen> with RouteAware {
   String _selectedCategory = 'Categories';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final modalRoute = ModalRoute.of(context);
+    if (modalRoute is PageRoute) {
+      customRouteObserver.subscribe(this, modalRoute);
+    }
+  }
+
+  @override
+  void dispose() {
+    customRouteObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    setState(() {});
+  }
 
   void _onCategorySelected(String category) {
     Navigator.push(
@@ -314,8 +337,7 @@ class _HomeState extends State<HomeScreen> {
                                             CrossAxisAlignment.end,
                                         children: [
                                           Container(
-                                            width:
-                                                30, // Adjust the width as needed
+                                            width: 30,
                                             height: 160,
                                             child: Align(
                                               alignment: Alignment.bottomCenter,
@@ -325,9 +347,7 @@ class _HomeState extends State<HomeScreen> {
                                               ),
                                             ),
                                           ),
-                                          SizedBox(
-                                              width:
-                                                  5), // Space between digit and movie image
+                                          SizedBox(width: 5),
                                           Container(
                                             width: 110,
                                             height: 160,

@@ -28,7 +28,7 @@ class DetailScreen extends StatelessWidget {
         preferredSize: const Size.fromHeight(60),
         child: getAppBar(context),
       ),
-      body: getBody(size, item),
+      body: getBody(size, item, context),
     );
   }
 
@@ -80,7 +80,7 @@ class DetailScreen extends StatelessWidget {
     );
   }
 
-  Widget getBody(Size size, Map item) {
+  Widget getBody(Size size, Map item, BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -174,11 +174,52 @@ class DetailScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                SizedBox(height: 25),
+                Center(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      _addToMyList(item, context);
+                    },
+                    icon: Icon(Icons.add, color: Colors.white),
+                    label:
+                        Text("My List", style: TextStyle(color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(int.parse('0xFFb30000')),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _addToMyList(Map item, BuildContext context) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    if (!Data.mylist.any((element) => element['id'] == item['id'])) {
+      Data.mylist.add(item);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Color(int.parse('0xFF00b300')),
+          content: Text('${item['title']} added to My List'),
+          showCloseIcon: true,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${item['title']} is already in My List'),
+          backgroundColor: Color(int.parse('0xFFb30000')),
+          showCloseIcon: true,
+        ),
+      );
+    }
   }
 }
